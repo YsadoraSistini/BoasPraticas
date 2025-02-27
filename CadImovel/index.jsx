@@ -10,7 +10,7 @@ import { FaArrowRight, FaMapMarkerAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { GetLocalStorage } from "../../context/utils";
 
-export function Card({ thumb, predio, logradouro, price, slug }) {
+export function Card({ thumb, predio, logradouro, preco, slug }) {
     return (
         <ContainerCard>
             <Img>
@@ -20,7 +20,7 @@ export function Card({ thumb, predio, logradouro, price, slug }) {
                 <h4>{predio}</h4>
                 <Itens>
                     <span><FaMapMarkerAlt />{logradouro}</span>
-                    <span>R$ {price} / mês</span>
+                    <span>R$ {preco} / mês</span>
                 </Itens>
                 <Link to={`/imovel/${slug}`}>Detalhes <FaArrowRight /></Link>
             </Description>
@@ -32,8 +32,8 @@ function CadImovel() {
     const [imobi, setImobi] = useState([]);
     const [thumb, setThumb] = useState('');
     const [predio, setPredio] = useState('');
-    const [description, setDescription] = useState('');
-    const [price, setPrice] = useState('');
+    const [descricao, setDescricao] = useState('');
+    const [preco, setPreco] = useState('');
     const [cep, setCep] = useState('');
     const [logradouro, setLogradouro] = useState('');
     const [numero, setNumero] = useState('');
@@ -42,20 +42,20 @@ function CadImovel() {
     const [cidade, setCidade] = useState('');
     const [uf, setUf] = useState('');
     const [area, setArea] = useState('');
-    const [bedrooms, setBedrooms] = useState('');
-    const [bathrooms, setBathrooms] = useState('');
-    const [name, setName] = useState('');
-    const [phone, setPhone] = useState('');
+    const [quartos, setQuartos] = useState('');
+    const [banheiros, setBanheiros] = useState('');
+    const [nome, setNome] = useState('');
+    const [telefone, setTelefone] = useState('');
     const [email, setEmail] = useState('');
-    const [message, setMessage] = useState([]);
+    const [mensagem, setMensagem] = useState([]);
 
-    const user = GetLocalStorage();
-    const userId = user.id;
+    const usuario = GetLocalStorage();
+    const usuarioId = usuario.id;
     
-    const checkCep = (cepValue) => {
-        const cleanedCep = cepValue.replace(/\D/g, '');
-        if (cleanedCep.length === 8) {
-            fetch(`https://viacep.com.br/ws/${cleanedCep}/json/`)
+    const checkCep = (valorCep) => {
+        const cepLimpo = valorCep.replace(/\D/g, '');
+        if (cepLimpo.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
                 .then((res) => res.json())
                 .then((data) => {
                     if (!data.erro) {
@@ -83,8 +83,8 @@ function CadImovel() {
         const data = new FormData();
         data.append('thumb', thumb);
         data.append('predio', predio);
-        data.append('description', description);
-        data.append('price', price);
+        data.append('descricao', descricao);
+        data.append('preco', preco);
         data.append('cep', cep);
         data.append('logradouro', logradouro);
         data.append('complemento', complemento);
@@ -93,12 +93,12 @@ function CadImovel() {
         data.append('cidade', cidade);
         data.append('uf', uf);
         data.append('area', area);
-        data.append('bedrooms', bedrooms);
-        data.append('bathrooms', bathrooms);
-        data.append('name', name);
-        data.append('phone', phone);
+        data.append('quartos', quartos);
+        data.append('banheiros', banheiros);
+        data.append('nome', nome);
+        data.append('telefone', telefone);
         data.append('email', email);
-        data.append('userId', userId); // Adiciona o userId aqui
+        data.append('usuarioId', usuarioId); // Adiciona o userId aqui
 
         try {
             const response = await api.post('/createimobi', data);
@@ -106,8 +106,8 @@ function CadImovel() {
 
             setThumb('');
             setPredio('');
-            setDescription('');
-            setPrice('');
+            setDescricao('');
+            setPreco('');
             setCep('');
             setLogradouro('');
             setNumero('');
@@ -116,10 +116,10 @@ function CadImovel() {
             setCidade('');
             setUf('');
             setArea('');
-            setBedrooms('');
-            setBathrooms('');
-            setName('');
-            setPhone('');
+            setQuartos('');
+            setBanheiros('');
+            setNome('');
+            setTelefone('');
             setEmail('');
         } catch (error) {
             toast.error('Erro ao cadastrar o imóvel.');
@@ -134,14 +134,14 @@ function CadImovel() {
     }, []);
 
     useEffect(() => {
-        api.get(`/listmessage/${userId}`)
+        api.get(`/listmessage/${usuarioId}`)
             .then((response) => {
                 setMessage(response.data.messagem);
             })
             .catch(() => {
                 console.log("Erro: Erro ao listar mensagens");
             });
-    }, [userId]);
+    }, [usuarioId]);
     return (
         <Container>
             <Div>
@@ -158,9 +158,9 @@ function CadImovel() {
                         <Card
                             key={item.id}
                             thumb={item.thumb}
-                            title={item.title}
-                            location={item.location}
-                            price={item.price}
+                            titulo={item.titulo}
+                            localizacao={item.localizacao}
+                            preco={item.preco}
                             slug={item.slug}
                         />
                     ))}
@@ -193,16 +193,16 @@ function CadImovel() {
                         <Label>Descrição do Imóvel:</Label>
                         <Input
                             type="text"
-                            name="description"
+                            name="descricao"
                             placeholder="Informe a descrição do imóvel"
-                            onChange={(e) => setDescription(e.target.value)}
+                            onChange={(e) => setDescricao(e.target.value)}
                         />
                         <Label>Valor:</Label>
                         <Input
                             type="text"
-                            name="price"
+                            name="preco"
                             placeholder="Informe o valor do imóvel"
-                            onChange={(e) => setPrice(e.target.value)}
+                            onChange={(e) => setPreco(e.target.value)}
                         />
                         <Label>Área:</Label>
                         <Input
@@ -215,16 +215,16 @@ function CadImovel() {
                         <Label>Quantidade de Quartos:</Label>
                         <Input
                             type="text"
-                            name="bedrooms"
+                            name="quartos"
                             placeholder="Informe a quantidade de quartos"
-                            onChange={(e) => setBedrooms(e.target.value)}
+                            onChange={(e) => setQuartos(e.target.value)}
                         />
                         <Label>Quantidade de Banheiros:</Label>
                         <Input
                             type="text"
-                            name="bathrooms"
+                            name="banheiros"
                             placeholder="Informe a quantidade de banheiros"
-                            onChange={(e) => setBathrooms(e.target.value)}
+                            onChange={(e) => setBanheiros(e.target.value)}
                         />
 
                     </Section>
@@ -297,17 +297,17 @@ function CadImovel() {
                         <Label>Nome:</Label>
                         <Input
                             type="text"
-                            name="name"
+                            name="nome"
                             placeholder="Informe seu nome"
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => setNome(e.target.value)}
                         />
                         <Label>Telefone:</Label>
                         <Mask
                             mask={"(99) 99999-9999"}
                             type="text"
-                            name="phone"
+                            name="telefone"
                             placeholder="Informe seu telefone"
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={(e) => setTelefone(e.target.value)}
                         />
                         <Label>Email:</Label>
                         <Input
