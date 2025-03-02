@@ -7,26 +7,32 @@ import { toast } from "react-toastify";
 import { checkCep } from "./funcoesAUX";
 
 function cadastroImoveis({ usuarioId }) {
+    // Estado para armazenar os dados do formulário
     const [form, setForm] = useState({
         thumb: '', predio: '', descricao: '', preco: '', cep: '', logradouro: '', numero: '', bairro: '', complemento: '', cidade: '', uf: '', area: '', quartos: '', banheiros: '', nome: '', telefone: '', email: ''
     });
 
+    // Função para atualizar o estado do formulário quando um campo é alterado
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
+
+        // Cria um objeto FormData e adiciona os campos do formulário
         const data = new FormData();
         Object.entries(form).forEach(([key, value]) => data.append(key, value));
         data.append("usuarioId", usuarioId);
 
         try {
+            // Faz a requisição POST para cadastrar o imóvel
             await api.post("/createimobi", data);
-            toast.success("Imóvel cadastrado com sucesso!");
+            toast.success("Imóvel cadastrado com sucesso!"); 
             setForm({});
         } catch (error) {
-            toast.error("Erro ao cadastrar o imóvel.");
+            toast.error("Erro ao cadastrar o imóvel."); 
         }
     };
 
@@ -41,4 +47,5 @@ function cadastroImoveis({ usuarioId }) {
         </Form>
     );
 }
+
 export default cadastroImoveis;
